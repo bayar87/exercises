@@ -2,6 +2,7 @@
 Task 4:
 
 In this task we present a real life dataset in the form of a supervised classification problem.
+Ref: data/coupon_clickstream.csv
 
 This dataset contains 50 observations and one target variable.
 What we are trying to predict here is that given these 50 metrics how likely is a user to click on a coupon.
