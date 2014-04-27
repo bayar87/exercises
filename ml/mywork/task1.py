@@ -54,7 +54,7 @@ print featList.pop(minInd), 'is repeated' ,   totFreq[0,minInd], 'times'
 
 
 
-# now we try to find the number of bigrams with guitar as the second words
+# Now we try to find the number of bigrams with guitar as the second words
 #Import the module as usual
 import nltk
 from nltk.collocations import *
