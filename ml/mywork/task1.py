@@ -91,7 +91,7 @@ scored = finder.score_ngrams(bigram_measures.raw_freq)
 sorted(bigram for bigram, score in scored)
 
 unique_Guitar =  list(set(sorted(bigram for bigram, score in scored)))
-print "The unique guitars in all the deals is %d" % len(unique_Guitar)
+print "The number of different guitars in all the deals is %d" % len(unique_Guitar)
 
 # return the 10 n-grams with the highest PMI
 print finder.nbest(bigram_measures.likelihood_ratio, 10)
