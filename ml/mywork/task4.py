@@ -25,10 +25,17 @@ Use optimal features you found above with different classifiers and evaulate you
 """
 ######################################Classification & Feature Selection ############################################
 
+
+
 import numpy
 import numpy as np
 import scipy
 from scipy.stats import *
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import cross_validation
+from sklearn import svm
+from sklearn import neighbors
+
 
 
 
@@ -50,7 +57,7 @@ def duplicate_columns(data, minoccur=2):
 
 print "The duplicate metrics are %s" % duplicate_columns(metrics)
 
-#remove columns
+#remove redundant columns
 metrics_unique = np.delete(metrics, np.s_[24,28,30,40,46], 1)
 
 nbr_Ftrs_uq = metrics_unique.shape[1] 
@@ -71,7 +78,44 @@ for i in range(nbr_Ftrs_uq): # rows are the number of rows in the matrix.
         r[i,j] = d[0]
         r[j,i] = r[j,i]
         if i!=j and r[i,j] > 0.4 and r[i,j] not in (0,1):
-        	nbr_Corr_Ftrs +=1
+        	nbr_Corr_Ftrs +=1 #Counter for nber of pair of features highly correlated
         	print "The feautures %d and %d are highly correlated and their correlation coefficient is equal to %0.3f" % (i,j,r[i,j])
 
-print "There are only %d highly correlated features with correlation coefficient bigger than 0.4" % nbr_Corr_Ftrs
+print "There are only %d pairs of highly correlated features with correlation coefficient bigger than 0.4" % nbr_Corr_Ftrs
+
+
+
+
+FeatrVar = np.var(metrics_unique, axis=0)
+
+
+#Theshold for variance
+VarThreshold = [1,5,10]
+
+
+#We design a variance-based filter
+count = 0
+filtered_train_data = []
+
+for i in range(len(VarThreshold)):
+    indices_selected_featr = [k for k,v in enumerate(FeatrVar >= VarThreshold[i]) if v]
+    filtered_data = metrics_unique[:,indices_selected_featr]
+    #split the data randomly to 500 testing samples and consider the rest as a training data
+    np.random.seed(0)
+    indices = np.random.permutation(len(filtered_data))
+    train_data = filtered_data[indices[:-500]]
+    train_labels = labels[indices[:-500]]
+    test_data  = filtered_data[indices[-500:]]
+    test_labels  = labels[indices[-500:]]
+    #SVM Classification     
+    clf = svm.SVC(kernel='linear', C=1).fit(train_data, train_labels)  
+    #Print the Classification accuracy for SVM
+    print "The SVM classification accuracy by selecting the top %d highest features in terms of variance > %0.3f is %0.3f" % (len(indices_selected_featr),VarThreshold[i],clf.score(test_data, test_labels))
+    knn = KNeighborsClassifier()
+    knn.fit(train_data, train_labels) 
+    #Print the Classification accuracy for KNN
+    print "The KNN classification accuracy by selecting the top %d highest features in terms of variance > %0.3f is %0.3f" % (len(indices_selected_featr),VarThreshold[i],knn.score(test_data, test_labels))
+    
+    
+    #Print the selected features indices
+    print "The selected features indices with highest variance are %s"  % indices_selected_featr
