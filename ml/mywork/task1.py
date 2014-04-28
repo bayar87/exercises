@@ -75,16 +75,23 @@ rdr = PlaintextCorpusReader('.','deals.txt')
 #2nd filter we need our bigrams to be diffrent from the stop words
 filt = lambda w1, w2: 'uitar' not in w2
 filtStp = lambda w1, w2: (w1 or w2 ) in stopwords.words('english')
+#Extra Filter
+ignore_list = ['Shop', 'shop', 'Online', 'online', 'Fingerstyle', 'Learn', 'GuitarCenter', 'at', 'on', 'Arts', 'for', '!', 'the', '-', 'Boutique', '4x12', '7', '.', '(', ')', ',', 'from', 'com', 'four', '2x12', '"', 'Flatpicking', 'Category', 'Destinations', 'HD', 'Flatpick', 'Products', 'Drums', 'Series']
+filtExtr = filtStp = lambda w1, w2: (w1 or w2 ) in ignore_list
 ## find bigrams
 finder = BigramCollocationFinder.from_words(rdr.words())
 
 finder.apply_ngram_filter(filt)
 finder.apply_ngram_filter(filtStp)
+finder.apply_ngram_filter(filtExtr)
 #compute the number of occurrences of bigrams
 scored = finder.score_ngrams(bigram_measures.raw_freq)
 
 #sort the bigrams by their occurrence frequencies
 sorted(bigram for bigram, score in scored)
+
+unique_Guitar =  list(set(sorted(bigram for bigram, score in scored)))
+print "The unique guitars in all the deals is %d" % len(unique_Guitar)
 
 # return the 10 n-grams with the highest PMI
 print finder.nbest(bigram_measures.likelihood_ratio, 10)
