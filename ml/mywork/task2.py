@@ -125,8 +125,8 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 
 for doc in corpus_lsi:
 	print(doc)
-
-
+#print topics: There are topic#0 & topic#1
+lsi.print_topics()
 
 
 #*************************************************************Topic Extraction using NMF********************************************************************** 
