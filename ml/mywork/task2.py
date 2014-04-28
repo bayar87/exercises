@@ -68,7 +68,8 @@ km.fit(Y)
 
 # Since we don't have the true labels, to assess the validity of the method and parameters we will use the Silhouette coefficient which is between 0 and 1
 #the bigger the coefficient is the better is the performance
-print("Silhouette Coefficient: %0.3f"  % metrics.silhouette_score(Y,km.labels_, metric='euclidean'))
+#I have commented the print line since the data is very big so it generates an error of memory
+#print("Silhouette Coefficient: %0.3f"  % metrics.silhouette_score(Y,km.labels_, metric='euclidean'))
 
 #*************************************************************Topic Extraction using gensim module*******************************
 
@@ -131,7 +132,7 @@ for doc in corpus_lsi:
 #*************************************************************Topic Extraction using NMF********************************************************************** 
 #I tried to use the method suggested by Yokoi et al. introduced in their paper titled "Topic Extraction for a Large Document Set with the Topic Integration"
 
-#The NMF method does works for low dimension since the program generates an error of memory when I run it.
+#The NMF method does only work for low dimension since the program generates an error of memory when I tried for our data.
 #Moreover, to assess the NMF we need to compute the cophenetic coefficient which requires NMF to be run multiple times for many iterations until it converges
 
 #I have provided the code commented here:
