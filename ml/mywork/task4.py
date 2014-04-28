@@ -90,32 +90,38 @@ FeatrVar = np.var(metrics_unique, axis=0)
 
 
 #Theshold for variance
-VarThreshold = [1,5,10]
+VarThreshold = [0.5,1,5,10,20,50]
 
 
 #We design a variance-based filter
-count = 0
+
 filtered_train_data = []
 
 for i in range(len(VarThreshold)):
     indices_selected_featr = [k for k,v in enumerate(FeatrVar >= VarThreshold[i]) if v]
     filtered_data = metrics_unique[:,indices_selected_featr]
     #split the data randomly to 500 testing samples and consider the rest as a training data
-    np.random.seed(0)
-    indices = np.random.permutation(len(filtered_data))
-    train_data = filtered_data[indices[:-500]]
-    train_labels = labels[indices[:-500]]
-    test_data  = filtered_data[indices[-500:]]
-    test_labels  = labels[indices[-500:]]
+    #np.random.seed(0)
+    #indices = np.random.permutation(len(filtered_data))
+    #train_data = filtered_data[indices[:-500]]
+    #train_labels = labels[indices[:-500]]
+    #test_data  = filtered_data[indices[-500:]]
+    #test_labels  = labels[indices[-500:]]
     #SVM Classification     
-    clf = svm.SVC(kernel='linear', C=1).fit(train_data, train_labels)  
+    #clf = svm.SVC(kernel='linear', C=1).fit(train_data, train_labels)  
+    clf = svm.SVC(kernel='linear', C=1)
+    scores = cross_validation.cross_val_score(clf, filtered_data, labels, cv=10)
+    #Print The mean score and the standard deviation (tolerance) of the score estimate after doing 10 fold cross-validation (CV) SVM classifier
+    print "The SVM classification accuracy by selecting the top %d highest features in terms of variance > %0.2f is %0.2f (+/- %0.2f)" % (len(indices_selected_featr),VarThreshold[i],scores.mean(), scores.std() * 2)
     #Print the Classification accuracy for SVM
-    print "The SVM classification accuracy by selecting the top %d highest features in terms of variance > %0.3f is %0.3f" % (len(indices_selected_featr),VarThreshold[i],clf.score(test_data, test_labels))
+    #print "The SVM classification accuracy by selecting the top %d highest features in terms of variance > %0.3f is %0.3f" % (len(indices_selected_featr),VarThreshold[i],clf.score(test_data, test_labels))
     knn = KNeighborsClassifier()
-    knn.fit(train_data, train_labels) 
+    scores = cross_validation.cross_val_score(knn, filtered_data, labels, cv=10)
+    #The mean score and the standard deviation (tolerance) of the score estimate after doing 10 fold cross-validation (CV) using KNN classifier
+    print "The KNN classification accuracy by selecting the top %d highest features in terms of variance > %0.2f is %0.2f (+/- %0.2f)" % (len(indices_selected_featr),VarThreshold[i],scores.mean(), scores.std() * 2)
+    #knn.fit(train_data, train_labels) 
+    #knn.score(test_data, test_labels)
     #Print the Classification accuracy for KNN
-    print "The KNN classification accuracy by selecting the top %d highest features in terms of variance > %0.3f is %0.3f" % (len(indices_selected_featr),VarThreshold[i],knn.score(test_data, test_labels))
-    
-    
+    #print "The KNN classification accuracy by selecting the top %d highest features in terms of variance > %0.3f is %0.3f" % (len(indices_selected_featr),VarThreshold[i],knn.score(test_data, test_labels))
     #Print the selected features indices
     print "The selected features indices with highest variance are %s"  % indices_selected_featr
