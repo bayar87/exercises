@@ -135,50 +135,45 @@ lsi.print_topics()
 #The NMF method does only work for low dimension since the program generates an error of memory when I tried for our data.
 #Moreover, to assess the NMF we need to compute the cophenetic coefficient which requires NMF to be run multiple times for many iterations until it converges
 
-#I have provided the code commented here:
+#I have provided the code here:
 
-# from __future__ import print_function
-
-# from time import time
-# from sklearn.feature_extraction import text
-# # from sklearn.feature_extraction.text import TfidfVectorizer
-# from sklearn import decomposition
-# from sklearn import datasets
-
-# nFeats =  100
-# nTopics = 10
-# nTopWords = 20
+from time import time
+from sklearn.feature_extraction import text
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn import decomposition
+from sklearn import datasets
+nsamples = 1000
+nFeats =  1000
+nTopics = 2
+nTopWords = 20
 
 
-# fcorpus = open('deals.txt')
+fcorpus = open('deals.txt')
 
-# linelist = []
+linelist = []
 
-# for x in fcorpus:
-# 	linelist.append(x)
-
-
-# # vectorizer = text.CountVectorizer(max_df=1, max_features=nFeats)
-# # counts = vectorizer.fit_transform(linelist)
-# # tfidf = text.TfidfTransformer().fit_transform(counts)
-# vectorizer = text.TfidfVectorizer(max_df=1.0, stop_words='english')
-# Y = vectorizer.fit_transform(linelist)
+for x in fcorpus:
+	linelist.append(x)
 
 
-# # Now we fit the NMF model
-# nmf = decomposition.NMF(n_components=nTopics).fit(Y)
-# print("done in %0.3fs." % (time() - t0))
-
-# # Inverse the vectorizer vocabulary to be able
-# feature_names = vectorizer.get_feature_names()
-
-# for topic_idx, topic in enumerate(nmf.components_):
-#     print("Topic #%d:" % topic_idx)
-#     print(" ".join([feature_names[i]
-#                     for i in topic.argsort()[:-TopWords - 1:-1]]))
-#     print()
+vectorizer = text.CountVectorizer(max_df=1, max_features=nFeats)
+counts = vectorizer.fit_transform(linelist[:nsamples])
+tfidf = text.TfidfTransformer().fit_transform(counts)
 
 
+
+# Now we fit the NMF model
+nmf = decomposition.NMF(n_components=nTopics).fit(tfidf)
+
+
+# Inverse the vectorizer vocabulary to be able
+feature_names = vectorizer.get_feature_names()
+
+for topic_idx, topic in enumerate(nmf.components_):
+    print("Topic #%d:" % topic_idx)
+    print(" ".join([feature_names[i]
+                    for i in topic.argsort()[:-nTopWords - 1:-1]]))
+    print()
 
 
 
